@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>BTHarmonic2Tester</RootNamespace>
+    <AssemblyName>BTHarmonic2Tester</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>BTHarmonic2Tester.ico</ApplicationIcon>
+    <!-- Realtek RtlBluetoothMP.dll is 32-bit; the process must be x86 to load it -->
+    <PlatformTarget>x86</PlatformTarget>
+    <!-- Keep only English satellite resources to shrink the single-file output -->
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="BTHarmonic2Tester.ico" />
+    <!-- Native Realtek BT MP DLL, deployed next to the executable.
+         Kept OUT of the single-file bundle so P/Invoke can load it from the app directory. -->
+    <Content Include="Native\RtlBluetoothMP.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <Link>RtlBluetoothMP.dll</Link>
+    </Content>
+  </ItemGroup>
+
+  <!-- Stamp each build with a UTC timestamp; used for the silent validity window. -->
+  <Target Name="GenerateBuildTime" BeforeTargets="BeforeCompile;CoreCompile">
+    <PropertyGroup>
+      <_BuildTimeUtc>$([System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))</_BuildTimeUtc>
+      <_BuildTimeFile>$(IntermediateOutputPath)BuildTime.g.cs</_BuildTimeFile>
+    </PropertyGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <ItemGroup>
+      <_BuildTimeLines Include="// &lt;auto-generated /&gt;" />
+      <_BuildTimeLines Include="namespace BTHarmonic2Tester%3B" />
+      <_BuildTimeLines Include="internal static class BuildInfo" />
+      <_BuildTimeLines Include="{" />
+      <_BuildTimeLines Include="    public const string BuildTimeUtc = &quot;$(_BuildTimeUtc)&quot;%3B" />
+      <_BuildTimeLines Include="}" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(_BuildTimeFile)" Lines="@(_BuildTimeLines)" Overwrite="true" />
+    <ItemGroup>
+      <Compile Remove="$(_BuildTimeFile)" />
+      <Compile Include="$(_BuildTimeFile)" />
+      <FileWrites Include="$(_BuildTimeFile)" />
+    </ItemGroup>
+  </Target>
+
+</Project>

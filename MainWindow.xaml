@@ -1,0 +1,277 @@
+<Window x:Class="BTHarmonic2Tester.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:BTHarmonic2Tester.ViewModels"
+        mc:Ignorable="d"
+        Title="BTHarmonic2TesterV1.0"
+        Height="652" Width="1060"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BgBrush}">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ==================== Row 0: N9020A Connection ==================== -->
+        <GroupBox Grid.Row="0">
+            <GroupBox.Header>
+                <TextBlock Text="&#x26A1; N9020A Connection" FontWeight="Bold"
+                           Foreground="{StaticResource HeaderBlue}" FontSize="14"/>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="IP Address:" Margin="0,0,8,0"/>
+                <TextBox Grid.Column="1" Margin="0,0,12,0"
+                         Text="{Binding IpAddress}"/>
+
+                <Button Grid.Column="2" Content="&#x1F50C; Connect" Margin="0,0,6,0"
+                        Background="#2E7D32" Command="{Binding ConnectSaCommand}"/>
+                <Button Grid.Column="3" Content="Disconnect" Margin="0,0,12,0"
+                        Background="#C62828" Command="{Binding DisconnectSaCommand}"/>
+
+                <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Width="10" Height="10" Margin="0,0,6,0">
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+                                <Setter Property="Fill" Value="#F44336"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSaConnected}" Value="True">
+                                        <Setter Property="Fill" Value="#4CAF50"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                    <TextBlock Text="{Binding SaStatusText}" Foreground="{StaticResource DimTextBrush}"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- ==================== Row 1: DUT Serial ==================== -->
+        <GroupBox Grid.Row="1">
+            <GroupBox.Header>
+                <TextBlock Text="&#x1F517; DUT (RTL8773D) Serial" FontWeight="Bold"
+                           Foreground="{StaticResource HeaderGreen}" FontSize="14"/>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="60"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Port:" Margin="0,0,8,0"/>
+                <ComboBox Grid.Column="1" Margin="0,0,6,0"
+                          ItemsSource="{Binding AvailablePorts}"
+                          SelectedItem="{Binding SelectedPort}"/>
+                <Button Grid.Column="2" Content="&#x21BB;" Margin="0,0,16,0" MinWidth="30"
+                        Command="{Binding RefreshPortsCommand}"/>
+
+                <TextBlock Grid.Column="3" Text="Baud:" Margin="0,0,8,0"/>
+                <ComboBox Grid.Column="4" Margin="0,0,16,0"
+                          ItemsSource="{Binding BaudRates}"
+                          SelectedItem="{Binding BaudRate}"/>
+
+                <TextBlock Grid.Column="5" Text="TX Gain Idx:" Margin="0,0,8,0"/>
+                <TextBox Grid.Column="6" Margin="0,0,16,0"
+                         Text="{Binding TxGainIndex}" TextAlignment="Center"/>
+
+                <Button Grid.Column="8" Content="&#x1F50C; Connect" Margin="0,0,6,0"
+                        Background="#2E7D32" Command="{Binding ConnectDutCommand}"/>
+                <Button Grid.Column="9" Content="Disconnect" Margin="0,0,12,0"
+                        Background="#C62828" Command="{Binding DisconnectDutCommand}"/>
+
+                <StackPanel Grid.Column="10" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Ellipse Width="10" Height="10" Margin="0,0,6,0">
+                        <Ellipse.Style>
+                            <Style TargetType="Ellipse">
+                                <Setter Property="Fill" Value="#F44336"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsDutConnected}" Value="True">
+                                        <Setter Property="Fill" Value="#4CAF50"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Ellipse.Style>
+                    </Ellipse>
+                    <TextBlock Text="{Binding DutStatusText}" Foreground="{StaticResource DimTextBrush}"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- ==================== Row 2: Test Configuration ==================== -->
+        <GroupBox Grid.Row="2">
+            <GroupBox.Header>
+                <TextBlock Text="&#x2699; Harmonic Test Configuration" FontWeight="Bold"
+                           Foreground="{StaticResource HeaderGreen}" FontSize="14"/>
+            </GroupBox.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="Line Loss (dB):" Margin="0,0,8,0"/>
+                <TextBox Grid.Column="1" Text="{Binding LineLoss, StringFormat=F1}" Margin="0,0,16,0"/>
+
+                <TextBlock Grid.Column="2" Text="H2 Limit (dBm):" Margin="0,0,8,0"/>
+                <TextBox Grid.Column="3" Text="{Binding H2LimitDbm, StringFormat=F1}" Margin="0,0,16,0"/>
+
+                <TextBlock Grid.Column="4" Text="{Binding CurrentPhase}"
+                           Foreground="#FFC107" FontStyle="Italic" Margin="0,0,20,0"/>
+
+                <Button Grid.Column="5" Content="&#x25B6; Start" Margin="0,0,6,0"
+                        FontWeight="Bold" Background="#1565C0" MinWidth="90"
+                        Command="{Binding StartCommand}"/>
+                <Button Grid.Column="6" Content="&#x23F9; Stop" Margin="0,0,6,0"
+                        Background="#C62828" MinWidth="70"
+                        Command="{Binding StopCommand}"/>
+            </Grid>
+        </GroupBox>
+
+        <!-- ==================== Row 3: Result Table ==================== -->
+        <GroupBox Grid.Row="3">
+            <GroupBox.Header>
+                <TextBlock Text="&#x1F4CB; Second-Harmonic Result" FontWeight="Bold"
+                           Foreground="{StaticResource HeaderBlue}" FontSize="14"/>
+            </GroupBox.Header>
+            <ItemsControl ItemsSource="{Binding ResultRows}">
+                <ItemsControl.Template>
+                    <ControlTemplate TargetType="ItemsControl">
+                        <StackPanel>
+                            <!-- Table Header -->
+                            <Grid Background="#263238" Margin="0,0,0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="90"/>
+                                    <ColumnDefinition Width="120"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="PHY" FontWeight="Bold"
+                                           Foreground="{StaticResource HeaderYellow}" Margin="8,6"/>
+                                <TextBlock Grid.Column="1" Text="Threshold" FontWeight="Bold"
+                                           Foreground="{StaticResource DimTextBrush}" Margin="8,6"/>
+                                <TextBlock Grid.Column="2" Text="Ch 0 (2402 MHz)" FontWeight="Bold"
+                                           Foreground="{StaticResource HeaderYellow}" Margin="8,6" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="Ch 19 (2440 MHz)" FontWeight="Bold"
+                                           Foreground="{StaticResource HeaderYellow}" Margin="8,6" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="Ch 39 (2480 MHz)" FontWeight="Bold"
+                                           Foreground="{StaticResource HeaderYellow}" Margin="8,6" HorizontalAlignment="Center"/>
+                            </Grid>
+                            <ItemsPresenter/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </ItemsControl.Template>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Background="#1B2838" Margin="0,0,0,1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="120"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" Text="{Binding PhyName}"
+                                       FontWeight="Bold" Foreground="#4FC3F7" Margin="8,8" FontSize="14"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Threshold}"
+                                       Foreground="{StaticResource DimTextBrush}" Margin="8,8" FontSize="11"/>
+
+                            <ContentControl Grid.Column="2" Content="{Binding Ch1}"/>
+                            <ContentControl Grid.Column="3" Content="{Binding Ch2}"/>
+                            <ContentControl Grid.Column="4" Content="{Binding Ch3}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+                <!-- Cell rendering for each ResultCell -->
+                <ItemsControl.Resources>
+                    <DataTemplate DataType="{x:Type vm:ResultCell}">
+                        <Border BorderBrush="#2A3A5E" BorderThickness="1" Margin="2">
+                            <StackPanel Margin="4,6" HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Main}" HorizontalAlignment="Center"
+                                           FontWeight="Bold" FontSize="14">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Foreground" Value="{StaticResource DimTextBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="TEST">
+                                                    <Setter Property="Foreground" Value="#FFC107"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="PASS">
+                                                    <Setter Property="Foreground" Value="#66BB6A"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="FAIL">
+                                                    <Setter Property="Foreground" Value="#EF5350"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBlock Text="{Binding Sub}" HorizontalAlignment="Center"
+                                           Foreground="{StaticResource DimTextBrush}" FontSize="11"/>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.Resources>
+            </ItemsControl>
+        </GroupBox>
+
+        <!-- ==================== Row 4: Log ==================== -->
+        <GroupBox Grid.Row="4">
+            <GroupBox.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="&#x1F4DD; Log" FontWeight="Bold"
+                               Foreground="{StaticResource HeaderPurple}" FontSize="14"/>
+                    <Button Content="Clear" Margin="12,0,0,0" Padding="8,2" FontSize="11"
+                            Command="{Binding ClearLogCommand}"/>
+                </StackPanel>
+            </GroupBox.Header>
+            <ListBox x:Name="LogListBox"
+                     ItemsSource="{Binding LogMessages}"
+                     Style="{StaticResource LogListBoxStyle}"
+                     ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="Foreground" Value="#C9D1D9"/>
+                        <Setter Property="Padding" Value="4,1"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+        </GroupBox>
+    </Grid>
+</Window>
